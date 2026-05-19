@@ -40,11 +40,76 @@
           letter-spacing: -0.01em;
         }
       }
+
+      /* Bottom-center nav: three circles half-buried under the viewport edge.
+         Hover lifts one fully into view with a springy overshoot, fades the
+         label in, and emits two staggered sonar-pulse rings. */
+      .menu {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 32px;
+        padding: 0 24px;
+        pointer-events: none; /* gaps pass clicks through to the canvas */
+        z-index: 10;
+      }
+      .menu-item {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        transform: translateY(50%);
+        transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        font-weight: 500;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+        color: #000;
+        text-decoration: none;
+        user-select: none;
+      }
+      .menu-item span {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 220ms ease 80ms, transform 220ms ease 80ms;
+      }
+      .menu-item:hover { transform: translateY(0); }
+      .menu-item:hover span { opacity: 1; transform: translateY(0); }
+      .menu-item::before,
+      .menu-item::after {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .menu-item:hover::before { animation: menu-pulse 1.4s ease-out infinite; }
+      .menu-item:hover::after  { animation: menu-pulse 1.4s ease-out 0.7s infinite; }
+      @keyframes menu-pulse {
+        0%   { transform: scale(1);   opacity: 0.55; }
+        100% { transform: scale(1.7); opacity: 0;    }
+      }
+      @media (max-width: 767px) { .menu { display: none; } }
     </style>
   </head>
   <body>
     <canvas id="stage"></canvas>
     <div class="mobile">Jack Stolly</div>
+    <nav class="menu" aria-label="Primary">
+      <a class="menu-item" href="#about"><span>About</span></a>
+      <a class="menu-item" href="#work"><span>Work</span></a>
+      <a class="menu-item" href="#contact"><span>Contact</span></a>
+    </nav>
 
     <script type="importmap">
       {
@@ -62,6 +127,7 @@
       import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
       const NAME = 'Jack Stolly';
+      const COMING_SOON = 'Coming Soon';
       const MIN_DESKTOP_WIDTH = 768;
       const BALL_PIXEL_RADIUS = 220;
 
@@ -255,11 +321,12 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Name at longitude ~90° (x = 0.25 of canvas width).
+        // Name at longitude ~90° (x = 0.25), "Coming Soon" 180° around (x = 0.75).
         ctx.font = '500 70px Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
         // Tighter kerning. Canvas2D letterSpacing is supported in modern browsers.
         ctx.letterSpacing = '-3px';
         ctx.fillText(NAME, c.width * 0.25, c.height * 0.5);
+        ctx.fillText(COMING_SOON, c.width * 0.75, c.height * 0.5);
         ctx.letterSpacing = '0px';
 
         const tex = new THREE.CanvasTexture(c);
@@ -487,9 +554,10 @@
       resize();
 
       {
-        const angle = (Math.random() * 0.5 + 0.25) * Math.PI;
-        const sign = Math.random() < 0.5 ? -1 : 1;
-        state.vel.set(Math.cos(angle) * SPEED * sign, Math.sin(angle) * SPEED);
+        // Launch on one of the four 45° diagonals so the ball heads straight
+        // for a corner — maximizes the chance of triggering the disco easter egg.
+        const angle = (Math.floor(Math.random() * 4) * 0.5 + 0.25) * Math.PI;
+        state.vel.set(Math.cos(angle) * SPEED, Math.sin(angle) * SPEED);
       }
 
       // --- Pointer interaction ---
