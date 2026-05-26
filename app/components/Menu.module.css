@@ -1,63 +1,54 @@
+/* Top navigation — spans the full viewport edge-to-edge. Items are spaced
+   with `justify-content: space-between` and horizontal padding equal to the
+   page's content gutter (6vw), so the outermost items sit right at the
+   page's outer edge. Background is transparent and only the words catch
+   pointer events — the rest of the page still receives clicks in the gaps.
+
+   `mix-blend-mode: difference` + white text means the nav inverts against
+   whatever is underneath it: black-on-white on the white About page, but
+   white-on-black on the dark Project Detail hero / dark gallery images.
+   This keeps the nav readable everywhere without needing a per-page color
+   override. */
 .menu {
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  gap: 32px;
-  padding: 0 24px;
+  justify-content: space-between;
+  align-items: center;
+  /* Horizontal padding matches the corner ball's `right: 32px` offset so
+     the right edge of "Contact" lines up with the right edge of the
+     corner ball. The wider span also makes the nav read more confidently
+     across the full viewport. */
+  padding: 32px;
   pointer-events: none;
   z-index: 10;
+  mix-blend-mode: difference;
+  /* Promote the nav into its own GPU compositing layer so the blend's
+     per-pixel work is offloaded from the main thread and the layer
+     doesn't get re-rasterised on every scroll/paint of the page below. */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .item {
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
   pointer-events: auto;
-  transform: translateY(50%);
-  transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  font-weight: 500;
-  font-size: 15px;
-  letter-spacing: -0.01em;
-  color: #000;
+  font-weight: 700;
+  font-size: clamp(20px, 1.8vw, 28px);
+  letter-spacing: -0.02em;
+  /* Pure white — mix-blend-mode: difference inverts this against the
+     backdrop. Don't change this to a non-white tone without rethinking
+     the blend math. */
+  color: #ffffff;
   text-decoration: none;
   user-select: none;
+  transition: opacity 180ms ease;
 }
 
-.item span {
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 220ms ease 80ms, transform 220ms ease 80ms;
+.item:hover { opacity: 0.6; }
+
+@media (max-width: 767px) {
+  .menu { padding: 20px; }
+  .item { font-size: 16px; }
 }
-
-.item:hover { transform: translateY(0); }
-.item:hover span { opacity: 1; transform: translateY(0); }
-
-.item::before,
-.item::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.item:hover::before { animation: menuPulse 1.4s ease-out infinite; }
-.item:hover::after  { animation: menuPulse 1.4s ease-out 0.7s infinite; }
-
-@keyframes menuPulse {
-  0%   { transform: scale(1);   opacity: 0.55; }
-  100% { transform: scale(1.7); opacity: 0;    }
-}
-
-@media (max-width: 767px) { .menu { display: none; } }

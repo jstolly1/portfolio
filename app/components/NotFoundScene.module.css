@@ -1,0 +1,76 @@
+.page {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* The Three.js canvas fills the viewport. */
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* Caption block — sits BELOW the rendered 404 in the visual layout, but
+   technically it's an HTML overlay positioned absolutely in the bottom
+   half of the viewport. Text is centered; the second line is the controls
+   hint. */
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 8vh;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #0a0a0a;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.captionTitle {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+
+.captionHint {
+  font-size: clamp(13px, 1.1vw, 16px);
+  color: #555;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.captionHint kbd {
+  font-family: inherit;
+  font-weight: 600;
+  padding: 2px 8px;
+  border: 1.5px solid #0a0a0a;
+  border-radius: 6px;
+  background: #ffffff;
+  margin: 0 2px;
+  font-size: 0.9em;
+}
+
+@media (max-width: 720px) {
+  .caption { bottom: 4vh; padding: 0 5vw; }
+}
+
+/* Visually hidden, screen-reader accessible — the on-screen instructions
+   live in the 3D scene as a baked texture, so we keep a plain-text copy
+   here for assistive tech. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,14 +1,43 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
   background: #ffffff;
-  overflow: hidden;
   color: #000;
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+body { min-height: 100vh; }
+
+/* Lock the document on the landing route so the bouncing ball has a fixed
+   playfield. Other routes scroll naturally. The class is set/cleared by a
+   client component watching pathname. */
+body.no-scroll { overflow: hidden; }
+
+/* Global page chrome (bottom-center menu, bouncing-ball corner nav) fades
+   out while the click-to-detail transition runs and while the user is
+   looking at the detail-page hero. data-hide-chrome="true" on the body is
+   set by ProjectsView (on click) and by ProjectDetail (when scroll is near
+   the top of the page); it's cleared when the user scrolls past the hero. */
+[data-global-menu],
+[data-global-ball] {
+  transition: opacity 0.4s ease;
+}
+
+body[data-hide-chrome="true"] [data-global-menu],
+body[data-hide-chrome="true"] [data-global-ball] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 404 page hides the global bouncing ball + corner-nav entirely so the
+   NotFoundScene's own three.js canvas owns the viewport. The
+   data-not-found attribute is set/cleared by NotFoundScene's effect. */
+body[data-not-found="true"] [data-global-ball] {
+  display: none;
+}
+
 
 * { box-sizing: border-box; }
 

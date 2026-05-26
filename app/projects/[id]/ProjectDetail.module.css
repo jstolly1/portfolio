@@ -1,0 +1,125 @@
+.page {
+  background: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+  padding-bottom: 0;
+}
+
+/* Hero — fullscreen image with the project title centered in white bold text.
+   High z-index so the bottom-center menu and bouncing-ball corner-nav sit
+   *behind* it at scroll 0 (they reveal naturally as the user scrolls past). */
+.hero {
+  position: relative;
+  z-index: 20;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Fill the hero container — image is cropped as needed to cover the
+     full viewport instead of letterboxing. */
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Hero title — static white bold text centered over the hero image. The
+   "behind the camera" zoom is performed during the click transition on
+   /projects, so by the time the user reaches this page the title is at its
+   final resting position and just sits there. */
+.heroTitle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(48px, 8vw, 140px);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Body — the project narrative. Constrained width for readability. */
+.body {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+}
+
+.body p {
+  font-size: 18px;
+  line-height: 1.65;
+  margin: 0 0 24px;
+  color: #1a1a1a;
+}
+
+/* Gallery — rows of items. Most rows hold one full-width item; rows holding
+   two items (paired 1:1 images) split 50/50 so squares can sit side by side. */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  padding-bottom: 120px;
+}
+
+/* Full-width row (single non-square item). */
+.galleryRow {
+  width: 100%;
+  padding: 0 6vw;
+}
+
+/* Side-by-side row (two 1:1 items). */
+.galleryPair {
+  width: 100%;
+  padding: 0 6vw;
+  display: flex;
+  gap: 32px;
+}
+
+.galleryPair > .galleryItem {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.galleryItem {
+  margin: 0;
+  width: 100%;
+}
+
+.galleryImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Back-to-projects link at the bottom — temporary; the project carousel will
+   live here in a follow-up pass. */
+.bottomNav {
+  display: flex;
+  justify-content: center;
+  padding: 40px 24px 120px;
+}
+
+.bottomLink {
+  display: inline-block;
+  padding: 12px 32px;
+  border: 2px solid #000;
+  border-radius: 999px;
+  font-size: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.bottomLink:hover { background: #000; color: #fff; }

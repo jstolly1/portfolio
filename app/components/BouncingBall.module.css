@@ -6,10 +6,33 @@
   height: 100%;
   touch-action: none;
   cursor: default;
-  z-index: 0;
+  /* Above the projects-stage overlays (z-index 5) so the parked ball
+     renders above the white curve ellipses. The canvas is transparent
+     except where the ball is drawn, and pointer-events is toggled off
+     on non-landing routes so clicks pass through to the carousel. */
+  z-index: 10;
 }
 .stage.grabbable { cursor: grab; }
 .stage.grabbing { cursor: grabbing; }
+.stage.clickable { cursor: pointer; }
+
+/* Invisible click target positioned over the parked ball in the bottom-right
+   corner. Sits above the canvas so clicking the ball still triggers
+   navigation home even though the canvas itself is pointer-events: none.
+   Offsets match CORNER_MARGIN_PX in BouncingBall.jsx. */
+.cornerNav {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 11;
+  padding: 0;
+}
 
 .mobile { display: none; }
 

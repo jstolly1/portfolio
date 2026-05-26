@@ -1,18 +1,20 @@
+'use client';
+
 import Link from 'next/link';
 import styles from './Menu.module.css';
 
 const items = [
   { href: '/about', label: 'About' },
-  { href: '/work', label: 'Work' },
+  { href: '/projects', label: 'Projects' },
   { href: '/contact', label: 'Contact' },
 ];
 
 export default function Menu() {
   return (
-    <nav className={styles.menu} aria-label="Primary">
+    <nav className={styles.menu} aria-label="Primary" data-global-menu>
       {items.map(({ href, label }) => (
         <Link key={href} href={href} className={styles.item}>
-          <span>{label}</span>
+          {label}
         </Link>
       ))}
     </nav>

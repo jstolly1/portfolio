@@ -1,0 +1,226 @@
+.stage {
+  position: relative;
+  z-index: 5;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  /* Curve pinch at viewport center vs edges:
+     - Center depth ≈ 0.4 × --curve-height = 280px (moderate pinch)
+     - Edge depth ≈ 90px (sides shorter now)
+     Bigger --v-offset → wider/flatter ellipse → more curve at the edges,
+     reducing the contrast between center pinch and side card height.
+     Variables live on .stage (not .carousel) so the ellipse overlays stay
+     viewport-sized while the carousel inside can scale independently for
+     entrance animations. */
+  --v-offset: 500px;
+  --curve-height: 900px;
+  /* GSAP tweens these on click-to-detail. 0 at rest; sweep to a large
+     negative value to push the top ellipse up off-screen and the bottom
+     ellipse down off-screen. */
+  --curve-top-shift: 0px;
+  --curve-bottom-shift: 0px;
+}
+
+/* White ellipse overlays that create the curved-carousel mask. These are
+   pseudo-elements of .stage (not .carousel) so they stay viewport-sized while
+   the carousel scales during the entrance animation — otherwise the curve
+   would shrink with the carousel and be visible even at tiny scale. */
+.stage::before,
+.stage::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: calc(100vw + 2 * var(--v-offset));
+  height: var(--curve-height);
+  left: calc(-1 * var(--v-offset));
+  background: #ffffff;
+  border-radius: 50%;
+  /* Above the click-to-detail overlay so the curves keep masking the
+     active image's top/bottom while the overlay grows underneath; only
+     once the ellipses slide off-frame does the full image become visible. */
+  z-index: 3;
+  pointer-events: none;
+}
+
+.stage::before { top: calc(-0.6 * var(--curve-height) + var(--curve-top-shift)); }
+.stage::after  { bottom: calc(-0.6 * var(--curve-height) + var(--curve-bottom-shift)); }
+
+/* Header — overlaid on top of the white curve area. Positioned so the title
+   sits in the curve dip, below the parked corner ball, with breathing room
+   above the visible card edge. Opacity is controlled by GSAP (entrance fade
+   after the roulette spin). Spans full viewport width with text-align center
+   so the title + description stay horizontally centered regardless of content
+   width changes during the spin. */
+.header {
+  position: absolute;
+  top: 250px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.header p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Carousel section — fills the entire viewport. The curve overlays now live
+   on .stage so they stay viewport-sized when this element is scaled by GSAP
+   during the entrance animation. */
+.carousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Embla viewport — the scroll/clip container. */
+.embla {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: auto;
+  cursor: grab;
+}
+.embla:active { cursor: grabbing; }
+
+/* Embla container — the flex row of slides that embla translates. */
+.emblaContainer {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+/* Each slide is 60vw wide with a 3vw gap. */
+.emblaSlide {
+  flex: 0 0 60vw;
+  margin-right: 3vw;
+  height: 100%;
+  min-height: 100%;
+  min-width: 0;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+}
+
+/* Image at its natural aspect, sized to the viewport (100vw × 100vh) and
+   centered on the card. object-fit: contain keeps the image's real
+   proportions — no stretching, no squishing — but the element being viewport-
+   sized means the image is large enough to (a) extend under the curve
+   overlays for the same "under the masks" feel the old design had, and
+   (b) give the parallax tween real slack to shift horizontally without
+   exposing the card's edge. The card's white background fills any letterbox
+   left by contain so it blends into the white curves. Parallax composes via
+   --parallax-x. */
+.cardImage {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  --parallax-x: 0%;
+  transform: translate(calc(-50% + var(--parallax-x)), -50%);
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* View Project — overlaid on the bottom curve, with breathing room below
+   the visible card edge (symmetric with the title at the top). */
+.viewBtn {
+  position: absolute;
+  bottom: 275px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  padding: 10px 28px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 999px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  z-index: 4;
+  transition: background 200ms ease, color 200ms ease;
+}
+.viewBtn:hover { background: #000; color: #fff; }
+
+/* Click-to-detail overlay. Rendered as a direct child of .stage (not via
+   portal) so its stacking lives inside .stage's stacking context — z-index 2
+   sits above .carousel (z=1) but below the ellipses (z=3), letting the
+   curves keep masking the image's top/bottom until they slide off frame.
+   .stage has no transform, so position: fixed here still resolves to
+   viewport coords. */
+.transitionOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+  will-change: clip-path;
+}
+
+.transitionImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Match ProjectDetail's .heroImage so the transition lands on the same
+     visual state. With `contain` here the overlay would letterbox and the
+     image would visibly snap to full-bleed the moment the detail page
+     mounts — that was the "white bars then full" jump. */
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Title that "zooms in from behind the camera" during the click transition —
+   starts at scale 6 (huge, just past the lens) and shrinks to scale 1 as the
+   image finishes growing. Sits above the ellipses so it stays on top
+   throughout. Centering translate is applied by GSAP (xPercent/yPercent)
+   so it composes cleanly with the scale tween. */
+.transitionTitle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(48px, 8vw, 140px);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0;
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
