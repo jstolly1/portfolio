@@ -48,7 +48,7 @@
 
 .item:hover { opacity: 0.6; }
 
+/* On phones the inline top nav is replaced by the slide-out MobileMenu. */
 @media (max-width: 767px) {
-  .menu { padding: 20px; }
-  .item { font-size: 16px; }
+  .menu { display: none; }
 }

@@ -5,6 +5,120 @@
   padding-bottom: 0;
 }
 
+/* White divider spanning the full viewport width, sitting just beneath the top
+   nav and layered on top of the hero (z-index above .hero's 20, matching the
+   promoted nav). Fixed like the nav so the two stay together; it belongs to the
+   hero, so data-hero-line="hide" (set by ProjectDetail once the user scrolls
+   out of the hero) fades it out. `top` is tuned to the nav band height (32px
+   padding + ~text + 32px padding). */
+.navRule {
+  position: fixed;
+  top: 96px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ffffff;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+body[data-hero-line="hide"] .navRule {
+  opacity: 0;
+}
+
+@media (max-width: 767px) {
+  /* Matches the nav's tighter 20px padding + 16px text at this breakpoint. */
+  .navRule {
+    top: 60px;
+  }
+}
+
+/* Hero side meta — small fixed labels hugging the left and right screen edges,
+   vertically centered, layered on top of the hero. They belong to the hero
+   only: data-hero-meta="hide" (set by ProjectDetail the instant the user
+   scrolls) fades the whole group out. mix-blend-mode: difference keeps the
+   text legible over any hero image, matching the top nav. The container is
+   full-viewport but only its text pixels paint, and pointer-events: none lets
+   clicks fall through to the page. */
+.heroMeta {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  z-index: 30;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+body[data-hero-meta="hide"] .heroMeta {
+  opacity: 0;
+}
+
+.heroMetaLeft,
+.heroMetaRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  /* Pure white — inverted by mix-blend-mode: difference against the backdrop. */
+  color: #ffffff;
+}
+
+/* 32px gutters line the meta up with the top nav's 32px padding. */
+.heroMetaLeft {
+  left: 32px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.heroMetaRight {
+  right: 32px;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.metaLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.metaValue {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+@media (max-width: 767px) {
+  .heroMetaLeft {
+    left: 20px;
+  }
+  .heroMetaRight {
+    right: 20px;
+  }
+  .heroMetaLeft,
+  .heroMetaRight {
+    gap: 16px;
+  }
+  .metaValue {
+    font-size: 11px;
+  }
+}
+
 /* Hero — fullscreen image with the project title centered in white bold text.
    High z-index so the bottom-center menu and bouncing-ball corner-nav sit
    *behind* it at scroll 0 (they reveal naturally as the user scrolls past). */

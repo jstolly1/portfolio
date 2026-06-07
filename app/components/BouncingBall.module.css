@@ -34,19 +34,8 @@
   padding: 0;
 }
 
-.mobile { display: none; }
-
+/* On phones the Three.js ball is hidden; the mobile landing shows the
+   NameMarbles letter-ball cluster instead (see NameMarbles.jsx). */
 @media (max-width: 767px) {
   .stage { display: none; }
-  .mobile {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    font-size: 28px;
-    letter-spacing: -0.01em;
-    z-index: 0;
-  }
 }

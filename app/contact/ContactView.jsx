@@ -73,7 +73,11 @@ export default function ContactView() {
         </form>
       </section>
 
-      <PuttToSend onHoleIn={handleHoleIn} apiRef={puttRef} />
+      <PuttToSend
+        onHoleIn={handleHoleIn}
+        apiRef={puttRef}
+        armed={form.message.trim().length > 0}
+      />
     </main>
   );
 }

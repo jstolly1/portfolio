@@ -5,7 +5,7 @@ import styles from './Menu.module.css';
 
 const items = [
   { href: '/about', label: 'About' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/projects', label: 'Work' },
   { href: '/contact', label: 'Contact' },
 ];
 

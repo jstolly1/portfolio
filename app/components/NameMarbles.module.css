@@ -1,0 +1,132 @@
+/* Mobile-landing-only hero: the name as a cluster of shaded marble-balls.
+   Hidden entirely on desktop (the desktop landing keeps the Three.js ball). */
+.stage {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .stage {
+    display: block;
+    position: absolute; /* fills the MobileHome hero section; scrolls with it */
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    touch-action: pan-y; /* allow vertical scroll; tap drops, tilt rolls */
+  }
+}
+
+/* Each letter-ball — a flat outlined circle (no shading), matching the rest
+   of the site. Position is written every frame from the Matter body. */
+.ball {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #0a0a0a;
+  background: #ffffff;
+  /* Clip the orbiting letter to the ball's silhouette so it reads as painted
+     on the surface, never spilling past the edge. */
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* The letter rides inside and rotates at a roll rate proportional to travel
+   (ω = distance / radius), so the ball visibly spins as it moves — the same
+   speed-proportional roll as the home-page bouncing ball. */
+.ballLetter {
+  display: block;
+  color: #0a0a0a;
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+  /* Hidden when the 3D roll carries it to the back of the ball. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Friendly in-page lead-in shown before the iOS "Allow Motion" system dialog —
+   its button gives iOS a clean, reliable permission gesture with context. */
+.tiltCard {
+  position: absolute; /* within the hero, so it scrolls away with it */
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  z-index: 12;
+  width: min(86vw, 320px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: #ffffff;
+  border: 2px solid #0a0a0a;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  animation: hintFade 240ms ease-out both;
+}
+
+.tiltCardText {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #0a0a0a;
+}
+
+.tiltCardBtn {
+  margin-top: 2px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* On-screen coaching: "tap to drop", then "tilt to roll". */
+.hint {
+  position: absolute; /* within the hero, so it scrolls away with it */
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: 2px solid #0a0a0a;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: hintFade 240ms ease-out both;
+}
+
+@keyframes hintFade {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* The phone glyph rocks side to side to suggest the tilt gesture. */
+.hintPhone {
+  transform-origin: center;
+  animation: hintTilt 1.6s ease-in-out infinite;
+}
+
+@keyframes hintTilt {
+  0%, 100% { transform: rotate(-16deg); }
+  50%      { transform: rotate(16deg); }
+}

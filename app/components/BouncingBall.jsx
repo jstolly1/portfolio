@@ -1085,7 +1085,6 @@ export default function BouncingBall({ fontFamily = 'Inter' }) {
   return (
     <>
       <canvas ref={canvasRef} className={styles.stage} data-global-ball />
-      <div className={styles.mobile}>Jack Stolly</div>
       {pathname !== '/' && (
         <button
           type="button"

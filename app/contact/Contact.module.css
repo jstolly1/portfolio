@@ -299,6 +299,35 @@
   margin-top: -1.5px;
 }
 
+/* "How to putt" hint — a ghost cursor + click ring that demo the grab,
+   pull-back, release gesture a few times on load. Purely cosmetic; removed the
+   moment the visitor grabs the ball. Positioned each frame from JS. */
+.hintCursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: -3px 0 0 -3px; /* nudge so the arrow tip lands on the coordinate */
+  pointer-events: none;
+  z-index: 999; /* on top of every other stage element */
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  will-change: transform, opacity;
+}
+
+.hintRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px; /* center the ring on the coordinate */
+  border: 2px solid rgba(10, 10, 10, 0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 998; /* just below the cursor, above the rest of the stage */
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
 @media (max-width: 720px) {
   .page { padding: 96px 5vw 40px; gap: 40px; }
   .row { grid-template-columns: 1fr; }

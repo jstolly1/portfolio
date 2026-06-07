@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import BouncingBall from "./components/BouncingBall";
 import Menu from "./components/Menu";
+import MobileMenu from "./components/MobileMenu";
 import ScrollLockOnLanding from "./components/ScrollLockOnLanding";
 import SmoothScroll from "./components/SmoothScroll";
 import "./globals.css";
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         <BouncingBall fontFamily={inter.style.fontFamily} />
         {children}
         <Menu />
+        <MobileMenu />
       </body>
     </html>
   );

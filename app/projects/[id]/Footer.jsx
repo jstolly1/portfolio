@@ -50,7 +50,7 @@ export default function Footer() {
         <nav className={styles.column} aria-label="Footer">
           <span className={styles.label}>Site</span>
           <Link href="/about" className={styles.link}>About</Link>
-          <Link href="/projects" className={styles.link}>Projects</Link>
+          <Link href="/projects" className={styles.link}>Work</Link>
           <Link href="/contact" className={styles.link}>Contact</Link>
         </nav>
         <div className={styles.column}>

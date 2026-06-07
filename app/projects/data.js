@@ -1,6 +1,6 @@
 // Auto-generated from the organized Webflow assets. Edit freely.
 
-export const PROJECT_COUNT = 12;
+export const PROJECT_COUNT = 10;
 
 export const projects = [
   {
@@ -66,18 +66,6 @@ export const projects = [
     ]
   },
   {
-    "id": 3,
-    "slug": "brc",
-    "title": "BRC",
-    "description": "Black Rock City logo and case-study animation.",
-    "image": "/assets/projects/brc/BRC_WorkCard.jpg",
-    "body": [
-      "A snapshot of the BRC work — visuals, mockups, and gallery below.",
-      "Replace this body copy with the real story behind the project."
-    ],
-    "gallery": []
-  },
-  {
     "id": 4,
     "slug": "dropout-u",
     "title": "Dropout U",
@@ -133,6 +121,7 @@ export const projects = [
     "slug": "guardian",
     "title": "Guardian",
     "description": "Magazine identity, mockups, and submission spreads for Guardian.",
+    "award": "AWARD WINNER",
     "image": "/assets/projects/guardian/Guardian_WorkCard.jpg",
     "body": [
       "A snapshot of the Guardian work — visuals, mockups, and gallery below.",
@@ -160,20 +149,6 @@ export const projects = [
       "/assets/projects/nebula/65e50ddbf1089d0f7c1ab687_Nebula_2Phones-p-2000.jpg",
       "/assets/projects/nebula/65e50ddc936d2887a057b799_Nebula_AllPhones-p-2000.jpg",
       "/assets/projects/nebula/Nebula_1.jpg"
-    ]
-  },
-  {
-    "id": 9,
-    "slug": "releaf",
-    "title": "ReLeaf",
-    "description": "Cannabis brand identity and product visuals.",
-    "image": "/assets/projects/releaf/ReLeadWorkCard.jpg",
-    "body": [
-      "A snapshot of the ReLeaf work — visuals, mockups, and gallery below.",
-      "Replace this body copy with the real story behind the project."
-    ],
-    "gallery": [
-      "/assets/projects/releaf/ReLeaf.png"
     ]
   },
   {
@@ -212,19 +187,19 @@ export const projects = [
   },
   {
     "id": 12,
-    "slug": "verde-valle",
-    "title": "Verde Valle",
-    "description": "Tequila brand visuals — bottles, ads, and packaging.",
-    "image": "/assets/projects/verde-valle/Verde_ValleWorkCard.jpg",
+    "slug": "bsn-sports",
+    "title": "BSN SPORTS",
+    "description": "Brand and campaign visuals for BSN SPORTS.",
+    "image": "/assets/projects/bsn-sports/Verde_ValleWorkCard.jpg",
     "body": [
-      "A snapshot of the Verde Valle work — visuals, mockups, and gallery below.",
+      "A snapshot of the BSN SPORTS work — visuals, mockups, and gallery below.",
       "Replace this body copy with the real story behind the project."
     ],
     "gallery": [
-      "/assets/projects/verde-valle/6608a4c56ef9e7b1804d01ad_VerdeValle_Ad.png",
-      "/assets/projects/verde-valle/6608a6470678d8241d1c6acf_VerdeValle_Ad2.png",
-      "/assets/projects/verde-valle/ValleVerde_FirstFrame.png",
-      "/assets/projects/verde-valle/Verde_Valle_Ad.jpg"
+      "/assets/projects/bsn-sports/6608a4c56ef9e7b1804d01ad_VerdeValle_Ad.png",
+      "/assets/projects/bsn-sports/6608a6470678d8241d1c6acf_VerdeValle_Ad2.png",
+      "/assets/projects/bsn-sports/ValleVerde_FirstFrame.png",
+      "/assets/projects/bsn-sports/Verde_Valle_Ad.jpg"
     ]
   }
 ];

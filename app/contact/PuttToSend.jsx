@@ -20,7 +20,7 @@ const POWER_DIVISOR  = 8;     // drag-px / divisor = launch velocity units
 // 0.025 → total distance = v0 / 0.025 = v0 * 40.) Velocity check on sink
 // was removed — any overlap with the cup counts as sunk now.
 
-export default function PuttToSend({ onHoleIn, apiRef: externalApiRef }) {
+export default function PuttToSend({ onHoleIn, apiRef: externalApiRef, armed = false }) {
   const stageRef = useRef(null);
   const onHoleInRef = useRef(onHoleIn);
   const [strokes, setStrokes] = useState(0);
@@ -30,6 +30,16 @@ export default function PuttToSend({ onHoleIn, apiRef: externalApiRef }) {
   // Keep the latest onHoleIn in a ref so the game effect doesn't re-init
   // every time the parent re-renders with a new inline function.
   useEffect(() => { onHoleInRef.current = onHoleIn; }, [onHoleIn]);
+
+  // The hint only runs once the visitor has typed a message (armed). The game
+  // effect exposes start/stop on hintCtrlRef; fire start the moment armed flips
+  // true. start() is idempotent and a no-op once the user has grabbed the ball.
+  const hintCtrlRef = useRef(null);
+  const armedRef = useRef(false);
+  useEffect(() => {
+    armedRef.current = armed;
+    if (armed) hintCtrlRef.current?.start();
+  }, [armed]);
 
   useEffect(() => {
     let raf = 0;
@@ -152,6 +162,8 @@ export default function PuttToSend({ onHoleIn, apiRef: externalApiRef }) {
       };
 
       const onDown = (e) => {
+        hintInteracted = true;
+        stopHint();
         if (ctrl.sunk) return;
         if (!atRest()) return;
         const m = getMouse(e);
@@ -300,7 +312,157 @@ export default function PuttToSend({ onHoleIn, apiRef: externalApiRef }) {
       };
       if (externalApiRef) externalApiRef.current = api;
 
+      // ---------- "How to putt" hint ----------
+      // A ghost cursor demonstrates the grab → pull-back → release gesture a
+      // few times so visitors know the ball is draggable. It only starts once
+      // the visitor has typed a message — startHint() is called from the React
+      // effect that watches `armed`. Runs on its own rAF and hides the real
+      // ball while it plays (so the demo ball reads as THE ball). Stops the
+      // instant the user grabs the ball or after MAX_LOOPS. Never touches the
+      // physics, so it can't accidentally putt or submit the form.
+      let hintRaf = 0;
+      let hintEls = [];
+      let hintInteracted = false;
+      const reducedMotion =
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function stopHint() {
+        if (!hintRaf && hintEls.length === 0) return;
+        if (hintRaf) cancelAnimationFrame(hintRaf);
+        hintRaf = 0;
+        hintEls.forEach((el) => el.remove());
+        hintEls = [];
+        ballEl.style.opacity = '1';
+      }
+
+      function startHint() {
+        // Idempotent: skip if reduced-motion, already running, or the user has
+        // already grabbed the ball.
+        if (reducedMotion || hintInteracted || hintEls.length) return;
+        const cursorEl = document.createElement('div');
+        cursorEl.className = styles.hintCursor;
+        cursorEl.innerHTML = `
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+            <path d="M4 2 L4 18 L8 14.2 L10.8 20.5 L13.2 19.4 L10.4 13.2 L15.5 13.2 Z"
+              fill="#0a0a0a" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>`;
+        const ringEl = document.createElement('div');
+        ringEl.className = styles.hintRing;
+        const demoBall = document.createElement('div');
+        demoBall.className = styles.golfBall; // looks identical to the real ball
+        const demoAim = document.createElement('div');
+        demoAim.className = styles.aimGuide;
+        stage.appendChild(demoAim);
+        stage.appendChild(demoBall);
+        stage.appendChild(ringEl);
+        stage.appendChild(cursorEl);
+        hintEls = [demoAim, demoBall, ringEl, cursorEl];
+
+        // Hide the real ball so only the demo ball shows during the hint.
+        ballEl.style.opacity = '0';
+
+        // Pull-back kept short so the cursor stays on the stage — the tee sits
+        // only 80px from the left wall, and the stage clips overflow.
+        const PULL = 55; // px of pull-back the cursor demonstrates
+        const LOOP = 3400; // one full demo cycle (ms)
+        const MAX_LOOPS = 3;
+        const startedAt = performance.now();
+        const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+        const easeInOut = (t) =>
+          t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const lerp = (a, b, t) => a + (b - a) * t;
+
+        const hintTick = (now) => {
+          const elapsed = now - startedAt;
+          if (Math.floor(elapsed / LOOP) >= MAX_LOOPS) {
+            stopHint();
+            return;
+          }
+          const p = (elapsed % LOOP) / LOOP; // 0..1 through one cycle
+
+          // Defaults: ball waiting at the tee, cursor + ring + aim hidden.
+          let curX = teeX;
+          let curY = teeY;
+          let curOp = 0;
+          let curScale = 1;
+          let ringScale = 0;
+          let ringOp = 0;
+          let aimLen = 0;
+          let ballX = teeX;
+          let ballY = teeY;
+          let ballOp = 1;
+
+          if (p < 0.12) {
+            // Cursor flies in toward the ball.
+            const k = easeOut(p / 0.12);
+            curX = lerp(teeX + 60, teeX, k);
+            curY = lerp(teeY + 85, teeY, k);
+            curOp = k;
+          } else if (p < 0.24) {
+            // Click — cursor dips, ring pulses out.
+            const k = (p - 0.12) / 0.12;
+            curOp = 1;
+            curScale = 1 - 0.18 * Math.sin(k * Math.PI);
+            ringScale = lerp(0.4, 1.5, k);
+            ringOp = (1 - k) * 0.7;
+          } else if (p < 0.46) {
+            // Pull back — cursor drags left, aim guide grows toward the cup.
+            const k = easeInOut((p - 0.24) / 0.22);
+            curX = teeX - PULL * k;
+            curOp = 1;
+            aimLen = PULL * k;
+          } else if (p < 0.54) {
+            // Hold at full power.
+            curX = teeX - PULL;
+            curOp = 1;
+            aimLen = PULL;
+          } else if (p < 0.8) {
+            // Release — cursor lifts, ball rolls to the cup.
+            const k = easeOut((p - 0.54) / 0.26);
+            curX = teeX - PULL;
+            curOp = 1 - k;
+            aimLen = PULL * Math.max(0, 1 - k * 3);
+            ballX = lerp(teeX, cupX, k);
+            ballY = lerp(teeY, cupY, k);
+          } else if (p < 0.88) {
+            // Sink — ball fades at the cup.
+            const k = (p - 0.8) / 0.08;
+            ballX = cupX;
+            ballY = cupY;
+            ballOp = 1 - k;
+            curOp = 0;
+          } else {
+            // Brief pause before looping.
+            ballOp = 0;
+            curOp = 0;
+          }
+
+          cursorEl.style.opacity = String(curOp);
+          cursorEl.style.transform = `translate(${curX}px, ${curY}px) scale(${curScale})`;
+          ringEl.style.opacity = String(ringOp);
+          ringEl.style.transform = `translate(${teeX}px, ${teeY}px) scale(${ringScale})`;
+          demoAim.style.display = aimLen > 1 ? 'block' : 'none';
+          demoAim.style.left = teeX + 'px';
+          demoAim.style.top = teeY + 'px';
+          demoAim.style.width = aimLen + 'px';
+          demoAim.style.transform = 'rotate(0rad)';
+          demoBall.style.opacity = String(ballOp);
+          demoBall.style.transform = `translate(${ballX - BALL_R}px, ${ballY - BALL_R}px)`;
+
+          hintRaf = requestAnimationFrame(hintTick);
+        };
+        hintRaf = requestAnimationFrame(hintTick);
+      }
+
+      hintCtrlRef.current = { start: startHint, stop: stopHint };
+      // If the visitor already typed a message before the engine finished
+      // loading, start right away.
+      if (armedRef.current) startHint();
+
       cleanup = () => {
+        stopHint();
+        hintCtrlRef.current = null;
         cancelAnimationFrame(raf);
         stage.removeEventListener('mousedown', onDown);
         stage.removeEventListener('touchstart', onDown);

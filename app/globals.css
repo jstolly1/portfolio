@@ -11,9 +11,18 @@ html, body {
 body { min-height: 100vh; }
 
 /* Lock the document on the landing route so the bouncing ball has a fixed
-   playfield. Other routes scroll naturally. The class is set/cleared by a
-   client component watching pathname. */
-body.no-scroll { overflow: hidden; }
+   playfield. DESKTOP ONLY — on mobile the landing is the scrollable MobileHome
+   one-pager, which must not be locked. The class is set/cleared by a client
+   component watching pathname. */
+@media (min-width: 768px) {
+  body.no-scroll { overflow: hidden; }
+}
+
+/* Smooth anchor scrolling for the mobile one-pager's #about / #work / #contact
+   nav. Scoped to mobile so it doesn't fight Lenis/GSAP on desktop. */
+@media (max-width: 767px) {
+  html { scroll-behavior: smooth; }
+}
 
 /* Global page chrome (bottom-center menu, bouncing-ball corner nav) fades
    out while the click-to-detail transition runs and while the user is
@@ -29,6 +38,16 @@ body[data-hide-chrome="true"] [data-global-menu],
 body[data-hide-chrome="true"] [data-global-ball] {
   opacity: 0;
   pointer-events: none;
+}
+
+/* On a project detail page the top nav rides on top of the hero image and
+   stays visible even at scroll 0 (where chrome is otherwise hidden) and even
+   while the hero — z-index: 20 — is under it. Only the nav is promoted; the
+   bouncing-ball corner-nav still hides at the top via the rule above. Placed
+   after the hide rule so it wins at equal specificity when both flags are set. */
+body[data-detail-hero="true"] [data-global-menu] {
+  opacity: 1;
+  z-index: 30;
 }
 
 /* 404 page hides the global bouncing ball + corner-nav entirely so the

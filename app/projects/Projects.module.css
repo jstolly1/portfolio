@@ -152,6 +152,40 @@
   will-change: transform;
 }
 
+/* Gold "award" seal stuck on a flagged project's card (rendered when the
+   project has an `award` field). Pinned to the top-right of the *visible* band:
+   the top curve mask clips the card's true top corner, so the badge sits just
+   below that mask's lower edge (~340px from the top of the viewport across the
+   card width). Tilted + gently pulsing for a flashy sticker feel.
+   pointer-events: none so it doesn't eat the card's drag/click; z-index keeps
+   it above the card image. */
+.awardBadge {
+  position: absolute;
+  top: 344px;
+  right: 7%;
+  width: clamp(96px, 11vw, 150px);
+  height: auto;
+  transform: rotate(-12deg) scale(1);
+  transform-origin: center;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+  animation: awardPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes awardPulse {
+  0%, 100% { transform: rotate(-12deg) scale(1); }
+  50%      { transform: rotate(-12deg) scale(1.06); }
+}
+
+@media (max-width: 767px) {
+  .awardBadge {
+    top: 300px;
+    right: 5%;
+    width: clamp(76px, 20vw, 110px);
+  }
+}
+
 /* View Project — overlaid on the bottom curve, with breathing room below
    the visible card edge (symmetric with the title at the top). */
 .viewBtn {

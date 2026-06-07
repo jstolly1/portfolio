@@ -7,6 +7,8 @@ import WheelGesturesPlugin from 'embla-carousel-wheel-gestures';
 import gsap from 'gsap';
 import styles from './Projects.module.css';
 import { projects as defaultProjects } from './data';
+import ProjectMedia from './ProjectMedia';
+import AwardBadge from './AwardBadge';
 
 // How much each image shifts within its card as the carousel scrolls.
 // At ±1 snap away from centered, the image shifts ±10% of its own width.
@@ -477,14 +479,15 @@ export default function ProjectsView({ projects = defaultProjects, embedded = fa
                   onClick={() => handleSlideClick(i)}
                   aria-label={`Open ${p.title}`}
                 >
-                  <img
+                  <ProjectMedia
                     src={p.image}
                     alt={p.title}
                     className={styles.cardImage}
-                    draggable={false}
-                    decoding="async"
-                    loading={i === 0 ? 'eager' : 'lazy'}
+                    eager={i === 0}
                   />
+                  {p.award && (
+                    <AwardBadge className={styles.awardBadge} label={p.award} />
+                  )}
                 </button>
               </div>
             ))}
@@ -503,11 +506,11 @@ export default function ProjectsView({ projects = defaultProjects, embedded = fa
 
       {overlayProject && (
         <div ref={overlayRef} className={styles.transitionOverlay}>
-          <img
+          <ProjectMedia
             src={overlayProject.project.image}
             alt=""
             className={styles.transitionImage}
-            draggable={false}
+            eager
           />
         </div>
       )}
